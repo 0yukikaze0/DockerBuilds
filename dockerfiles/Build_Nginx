@@ -1,0 +1,38 @@
+#--------------------------------------------------
+# Based on ubuntu 16.04
+# Container to build nginx
+#--------------------------------------------------
+
+FROM ubuntu:16.04
+
+MAINTAINER Ashfaq
+
+# Misc installations
+RUN apt-get update
+RUN apt-get install -y nano wget curl dialog net-tools
+
+# Download nginx signing key and add it to the apt key ring
+RUN wget http://nginx.org/keys/nginx_signing.key
+RUN apt-key  add nginx_signing.key
+
+# Install nginx
+RUN apt-get update
+RUN apt-get install -y nginx
+
+# Replace original nginx.conf with custom one from current directory
+RUN rm /etc/nginx/nginx.conf
+ADD ./assets/nginx.conf /etc/nginx/
+
+# Add daemon off directive to nginx configuration, so that the process runs 
+# in foreground and docker doesnt quit
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Set entry command to start nginx
+CMD service nginx start
+
+
+
+
