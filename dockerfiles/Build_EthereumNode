@@ -1,0 +1,45 @@
+#--------------------------------------------------
+# Based on ubuntu 16.04
+# Container to build nginx
+#--------------------------------------------------
+
+FROM ubuntu:16.04
+
+MAINTAINER Ashfaq
+
+# Clone customized go-ethereum version from github repo
+# Copy executables to root directory
+# Available executables would be as follows
+# +---------------+-------------------------------------------------------------------------+
+# |geth           | CLI client                                                              |
+# +---------------+-------------------------------------------------------------------------+
+# |abigen         | Source code generator                                                   |
+# +---------------+-------------------------------------------------------------------------+
+# |bootnode       | Stripped down version of Ethereum client implementation that only takes |
+# +---------------+-------------------------------------------------------------------------+
+# |               | part in the network node discovery protocol,                            |
+# +---------------+-------------------------------------------------------------------------+
+# |disasm         | Bytecode disassembler                                                   |
+# +---------------+-------------------------------------------------------------------------+
+# |gethrpctest    | Developer utility tool to support ethereum/rpc-test                     |
+# +---------------+-------------------------------------------------------------------------+
+# |rlpdump        | Developer utility tool to convert binary RLP (Recursive Length Prefix)  |
+# |               | dumps (data encoding used by the Ethereum protocol both network as well |
+# |               | as consensus wise) to user friendlier hierarchical representation       |
+# |               | (e.g. rlpdump --hex CE0183FFFFFFC4C304050583616263).                    |
+# +---------------+-------------------------------------------------------------------------+
+# |swarm          | swarm daemon and tools.                                                 |
+# +---------------+-------------------------------------------------------------------------+
+
+RUN \
+   apt-get update                                                                   && \
+   apt-get install -y nano wget curl dialog net-tools build-essential git golang    && \
+   git clone https://github.com/0yukikaze0/go-ethereum.git                          && \
+   (cd go-ethereum && make all)                                                     && \
+   cp /go-ethereum/build/bin/* /                                                    && \
+   rm -rf /go-ethereum                                                              && \
+   apt-get clean        
+
+# Expose port 9086 and 30303
+EXPOSE 9086
+EXPOSE 30303
