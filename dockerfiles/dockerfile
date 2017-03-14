@@ -1,0 +1,36 @@
+############################################################
+# Based on Ubuntu 16.04
+# Builds latest version of Go-Ethereum from below
+# https://github.com/ethereum/go-ethereum
+# 
+# Installs solc from ethereum ppa repos
+############################################################
+
+FROM ubuntu:16.04
+
+MAINTAINER https://github.com/0yukikaze0
+
+RUN apt-get update														&& \
+	echo 'Installing git'												&& \
+	apt-get install -y git golang build-essential software-properties-common libgmp3-dev   		&& \
+	mkdir $HOME/goWrkSpc												&& \
+	export GOPATH=$HOME/goWrkSpc										&& \
+	export "PATH=$PATH:$HOME/go/bin:/usr/local/go/bin" >> ~/.bashrc 
+
+
+############################################################
+# Clone go-ethereum and execute a build
+############################################################
+RUN mkdir /usr/local/ethereum 											&& \
+	cd /usr/local/ethereum 												&& \
+	git clone -b release/1.5 https://github.com/ethereum/go-ethereum 	&& \
+	chmod 777 -R go-ethereum 											&& \
+	cd go-ethereum 														&& \
+	make geth 														
+
+############################################################
+# Install Solidity Compiler
+############################################################
+RUN add-apt-repository ppa:ethereum/ethereum 						&& \
+    apt-get update 													&& \
+    apt-get install -y solc 											
